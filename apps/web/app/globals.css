@@ -1,50 +1,36 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.imgDark {
-  display: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+    --background: #ffffff;
+    --foreground: #0a0a0a;
+    --primary: #5369f8;
+    --primary-foreground: #fafafa;
+    --secondary: #f2f2f2;
+    --secondary-foreground: #1a1a1a;
+    --muted: #f2f2f2;
+    --muted-foreground: #757575;
+    --accent: #f2f2f2;
+    --accent-foreground: #1a1a1a;
+    --destructive: #e63946;
+    --destructive-foreground: #fafafa;
+    --border: #e6e6e6;
+    --input: #e6e6e6;
+    --ring: #1a1a1a;
+    --radius: 0.5rem;
   }
 
-  .imgLight {
-    display: none;
-  }
-  .imgDark {
-    display: unset;
+  body.scroll-lock {
+    overflow: hidden !important;
+    overscroll-behavior: contain;
+    position: relative !important;
+    padding-left: 0px;
+    padding-top: 0px;
+    padding-right: 0px;
+    margin-left: 0;
+    margin-top: 0;
+    margin-right: 0px !important;
   }
 }
