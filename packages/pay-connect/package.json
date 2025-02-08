@@ -1,6 +1,6 @@
 {
-  "name": "@repo/payment-gateway-module",
-  "version": "1.0.0",
+  "name": "pay-connect",
+  "version": "0.1.0",
   "description": "A module for integrating multiple payment gateways including PayPal, Stripe, and Momo.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -20,10 +20,11 @@
     "stripe",
     "momo"
   ],
-  "author": "Your Name",
+  "author": "Khanh Le",
   "license": "MIT",
-  "devDependencies": {
-    "tsup": "^8.3.6",
-    "typescript": "^4.0.0"
-  }
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ]
 }

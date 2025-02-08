@@ -1,10 +1,10 @@
 export class PaypalGateway {
-  private clientId: string;
-  private clientSecret: string;
+  private clientId: string
+  private clientSecret: string
 
   constructor(clientId: string, clientSecret: string) {
-    this.clientId = clientId;
-    this.clientSecret = clientSecret;
+    this.clientId = clientId
+    this.clientSecret = clientSecret
   }
 
   initializePayment(amount: number, currency: string) {
@@ -14,7 +14,7 @@ export class PaypalGateway {
       message: "Payment initialized",
       amount: amount,
       currency: currency,
-    };
+    }
   }
 
   executePayment(paymentId: string, payerId: string) {
@@ -24,7 +24,7 @@ export class PaypalGateway {
       message: "Payment executed",
       paymentId: paymentId,
       payerId: payerId,
-    };
+    }
   }
 
   refundPayment(transactionId: string, amount: number) {
@@ -34,6 +34,6 @@ export class PaypalGateway {
       message: "Payment refunded",
       transactionId: transactionId,
       amount: amount,
-    };
+    }
   }
 }

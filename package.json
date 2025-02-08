@@ -6,7 +6,8 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,css,md}\"",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "publish-packages": "turbo run build lint && npx @changesets/cli version && npx @changesets/cli publish"
   },
   "lint-staged": {
     "*.{ts,js,tsx,jsx,json,md}": [
@@ -17,6 +18,7 @@
     "eslint": "^9.19.0",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
+    "tsup": "^8.3.6",
     "prettier": "^3.3.3",
     "turbo": "^2.2.3",
     "typescript": "5.5.4"
