@@ -1,5 +1,5 @@
 {
-  "name": "my-turborepo",
+  "name": "payment-gateway",
   "private": true,
   "scripts": {
     "build": "turbo build",
