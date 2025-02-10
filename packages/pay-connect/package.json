@@ -11,9 +11,12 @@
     "test": "echo \"No tests specified\" && exit 0"
   },
   "exports": {
-    "./index": "./src/index.ts"
+    ".": "./src/index.ts"
   },
   "keywords": [
+    "pay-connect",
+    "pay",
+    "connect",
     "payment",
     "gateway",
     "paypal",
@@ -26,5 +29,11 @@
     "dist",
     "README.md",
     "CHANGELOG.md"
-  ]
+  ],
+  "dependencies": {
+    "@paypal/paypal-js": "^8.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1"
+  }
 }
