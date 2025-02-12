@@ -60,15 +60,6 @@ const {
 // Capture an order
 const captureResponse = await paypal.orders.captureOrder(orderId)
 
-// Refund a captured payment
-const refundResponse = await paypal.payments.refundCapturedPayment(
-  "capture-id",
-  "105.00",
-)
-
-// Get capture details
-const captureDetails = await paypal.payments.getCaptureDetails("capture-id")
-
 // Create a product
 const {
   jsonResponse: { id: productId },
@@ -142,10 +133,6 @@ const subscriptionId = await paypal.subscriptions.createSubscription({
     cancel_url: "https://your-cancel-url.com",
   },
 })
-
-// Get subscription details
-const subscriptionDetails =
-  await paypal.subscriptions.getSubscriptionDetails(subscriptionId)
 ```
 
 ### Stripe Example
@@ -184,94 +171,38 @@ When initializing the `PaypalGateway`, you can pass the following options:
 - `createOrder(data: OrderData)`: Creates a new order.
 - `captureOrder(orderID: string)`: Captures an existing order.
 
-#### `createOrder` Props
-
-| Prop           | Type   | Description         |
-| -------------- | ------ | ------------------- |
-| `subtotal`     | string | Subtotal amount     |
-| `tax`          | string | Tax amount          |
-| `discount`     | string | Discount amount     |
-| `total`        | string | Total amount        |
-| `billing_info` | object | Billing information |
-
-#### `captureOrder` Props
-
-| Prop      | Type   | Description                |
-| --------- | ------ | -------------------------- |
-| `orderID` | string | ID of the order to capture |
-
 ### Subscriptions
 
 - `createSubscription(data: SubscriptionData)`: Creates a new subscription.
 - `createPlan(data: PlanData)`: Creates a new subscription plan.
 - `getSubscriptionDetails(subscriptionID: string)`: Retrieves details of an
   existing subscription.
+- `cancelSubscription(subscriptionID: string, reason: string)`: Cancels an
+  existing subscription.
+- `activateSubscription(subscriptionID: string)`: Activates an existing
+  subscription.
+- `captureSubscription(subscriptionID: string)`: Captures an existing
+  subscription.
+- `suspendSubscription(subscriptionID: string, reason: string)`: Suspends an
+  existing subscription.
+- `reviseSubscription(subscriptionID: string, data: any)`: Revises an existing
+  subscription.
+- `listSubscriptionTransactions(subscriptionID: string, startTime: string, endTime: string)`:
+  Lists transactions of an existing subscription.
 
-#### `createSubscription` Props
+### Plans
 
-| Prop                  | Type   | Description            |
-| --------------------- | ------ | ---------------------- |
-| `plan_id`             | string | ID of the plan         |
-| `subscriber`          | object | Subscriber information |
-| `application_context` | object | Application context    |
-
-#### `createPlan` Props
-
-| Prop                  | Type   | Description                |
-| --------------------- | ------ | -------------------------- |
-| `product_id`          | string | ID of the product          |
-| `name`                | string | Name of the plan           |
-| `description`         | string | Description of the plan    |
-| `status`              | string | Status of the plan         |
-| `billing_cycles`      | array  | Billing cycles information |
-| `payment_preferences` | object | Payment preferences        |
-| `taxes`               | object | Tax information            |
-
-#### `getSubscriptionDetails` Props
-
-| Prop             | Type   | Description            |
-| ---------------- | ------ | ---------------------- |
-| `subscriptionID` | string | ID of the subscription |
-
-### Payments
-
-- `refundCapturedPayment(captureID: string, amount: string)`: Refunds a captured
-  payment.
-- `getCaptureDetails(captureID: string)`: Retrieves details of a captured
-  payment.
-
-#### `refundCapturedPayment` Props
-
-| Prop        | Type   | Description                |
-| ----------- | ------ | -------------------------- |
-| `captureID` | string | ID of the captured payment |
-| `amount`    | string | Amount to refund           |
-
-#### `getCaptureDetails` Props
-
-| Prop        | Type   | Description                |
-| ----------- | ------ | -------------------------- |
-| `captureID` | string | ID of the captured payment |
+- `createPlan(data: PlanData)`: Creates a new subscription plan.
+- `getPlanList()`: Retrieves a list of subscription plans.
+- `getPlanDetails(planID: string)`: Retrieves details of a subscription plan.
+- `updatePlan(planID: string, data: any)`: Updates an existing subscription
+  plan.
+- `updatePlanPricing(planID: string, data: PricingData)`: Updates the pricing of
+  an existing subscription plan.
 
 ### Products
 
 - `createProduct(data: ProductData)`: Creates a new product.
-
-#### `createProduct` Props
-
-| Prop          | Type   | Description                |
-| ------------- | ------ | -------------------------- |
-| `name`        | string | Name of the product        |
-| `description` | string | Description of the product |
-| `type`        | string | Type of the product        |
-| `category`    | string | Category of the product    |
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a pull request or open an
-issue for any enhancements or bug fixes.
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for more
-details.
+- `getProductList()`: Retrieves a list of products.
+- `getProductDetails(productId: string)`: Retrieves details of a product.
+- `updateProduct(productId: string, data: any)`: Updates an existing product.

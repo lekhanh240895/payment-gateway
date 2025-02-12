@@ -39,23 +39,48 @@ export class PaypalGateway {
     this.orders = new PayPalOrders(
       this.options,
       this.baseUrl,
-      this.clientSecret,
+      this.generateAccessToken.bind(this),
     )
     this.subscriptions = new PayPalSubscriptions(
       this.options,
       this.baseUrl,
-      this.clientSecret,
+      this.generateAccessToken.bind(this),
     )
     this.payments = new PayPalPayments(
       this.options,
       this.baseUrl,
-      this.clientSecret,
+      this.generateAccessToken.bind(this),
     )
     this.products = new PayPalProducts(
       this.options,
       this.baseUrl,
-      this.clientSecret,
+      this.generateAccessToken.bind(this),
     )
+  }
+
+  private async generateAccessToken() {
+    if (!this.clientSecret) {
+      throw new Error("Client secret is required for generating access token")
+    }
+
+    const auth = Buffer.from(
+      `${this.options.clientId}:${this.clientSecret}`,
+    ).toString("base64")
+    const response = await fetch(`${this.baseUrl}/v1/oauth2/token`, {
+      method: "POST",
+      body: "grant_type=client_credentials",
+      headers: {
+        Authorization: `Basic ${auth}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to generate access token: ${response.statusText}`)
+    }
+
+    const data = await response.json()
+    return data.access_token
   }
 
   async renderCheckoutButtons(

@@ -108,3 +108,23 @@ export interface CaptureData {
   capture_type: string
   amount: { currency_code: string; value: string }
 }
+export interface PricingData {
+  pricing_schemes: {
+    billing_cycle_sequence: number
+    pricing_scheme: {
+      fixed_price: {
+        value: string
+        currency_code: string
+      }
+      pricing_model?: string
+      tiers?: {
+        starting_quantity: string
+        ending_quantity?: string
+        amount: {
+          value: string
+          currency_code: string
+        }
+      }[]
+    }
+  }[]
+}

@@ -1,9 +1,11 @@
-import PaymentGateway from "./components/PaymentGateway";
+import Link from "next/link"
 
 export default function Home() {
   return (
     <div>
-      <PaymentGateway />
+      <Link href={"/paypal"}>Paypal Examples</Link>
+      <Link href={"/stripe"}>Stripe Examples</Link>
+      <Link href={"/momo"}>Momo Examples</Link>
     </div>
-  );
+  )
 }
