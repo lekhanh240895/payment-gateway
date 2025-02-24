@@ -1,8 +1,8 @@
 # Pay Connect Modules
 
 This project provides a unified interface for integrating multiple payment
-gateways, including PayPal, Stripe, and Momo. It is designed to simplify the
-process of handling payments in your application.
+gateways, including PayPal, Stripe, Momo, and Google Pay. It is designed to
+simplify the process of handling payments in your application.
 
 ## Features
 
@@ -12,6 +12,8 @@ process of handling payments in your application.
   `StripeGateway` class.
 - **Momo Integration**: Integrate Momo payment services using the `MomoGateway`
   class.
+- **Google Pay Integration**: Integrate Google Pay services using the
+  `GooglePayGateway` class.
 
 ## Installation
 
@@ -28,7 +30,12 @@ npm install pay-connect
 You can import the payment gateway module in your application as follows:
 
 ```typescript
-import { PaypalGateway, StripeGateway, MomoGateway } from "pay-connect"
+import {
+  PaypalGateway,
+  StripeGateway,
+  MomoGateway,
+  GooglePayGateway,
+} from "pay-connect"
 ```
 
 ### PayPal Example
@@ -40,97 +47,26 @@ const paypal = new PaypalGateway({
   environment: "sandbox", // or "production"
 })
 
-// Create an order
-const {
-  jsonResponse: { id: orderId },
-} = await paypal.orders.createOrder({
-  subtotal: "100.00",
-  tax: "10.00",
-  discount: "5.00",
-  total: "105.00",
-  billing_info: {
-    name: "John Doe",
-    phone_number: "123456789",
-    address: "123 Main St",
-    city: "Anytown",
-    postal_code: "95131",
-  },
+// Render checkout button
+paypal.renderCheckoutButtons("paypal-button-checkout-container", {
+  createOrder: createOrderHandler,
+  onApprove: onApproveCheckoutHandler,
 })
-
-// Capture an order
-const captureResponse = await paypal.orders.captureOrder(orderId)
-
-// Create a product
-const {
-  jsonResponse: { id: productId },
-} = await paypal.products.createProduct({
-  name: "Basic Product",
-  description: "A basic product for subscription",
-  type: "SERVICE",
-  category: "SOFTWARE",
-})
-
-// Create a plan
-const {
-  jsonResponse: { id: planId },
-} = await paypal.subscriptions.createPlan({
-  product_id: productId,
-  name: "Basic Plan",
-  description: "Basic subscription plan",
-  status: "ACTIVE",
-  billing_cycles: [
-    {
-      frequency: {
-        interval_unit: "MONTH",
-        interval_count: 1,
-      },
-      tenure_type: "REGULAR",
-      sequence: 1,
-      total_cycles: 12,
-      pricing_scheme: {
-        fixed_price: {
-          value: "10.00",
-          currency_code: "USD",
-        },
-      },
-    },
-  ],
-  payment_preferences: {
-    auto_bill_outstanding: true,
-    setup_fee: {
-      value: "0.00",
-      currency_code: "USD",
-    },
-    setup_fee_failure_action: "CONTINUE",
-    payment_failure_threshold: 3,
+// Render subscription button
+paypal.renderSubscriptionButtons("paypal-button-subscription-container", {
+  createSubscription: async () => {
+    if (createSubscriptionHandlerRef.current) {
+      return await createSubscriptionHandlerRef.current()
+    }
+    throw new Error("createSubscriptionHandlerRef.current is not defined")
   },
-  taxes: {
-    percentage: "10",
-    inclusive: false,
-  },
-})
-
-// Create a subscription
-const subscriptionId = await paypal.subscriptions.createSubscription({
-  plan_id: planId,
-  subscriber: {
-    name: {
-      given_name: "John",
-      surname: "Doe",
-    },
-    email_address: "john.doe@example.com",
-  },
-  application_context: {
-    brand_name: "Your Brand",
-    locale: "en-US",
-    shipping_preference: "SET_PROVIDED_ADDRESS",
-    user_action: "SUBSCRIBE_NOW",
-    payment_method: {
-      payer_selected: "PAYPAL",
-      payee_preferred: "IMMEDIATE_PAYMENT_REQUIRED",
-    },
-    return_url: "https://your-return-url.com",
-    cancel_url: "https://your-cancel-url.com",
+  onApprove: async (data: { subscriptionID?: string | null | undefined }) => {
+    if (!data.subscriptionID) {
+      throw new Error("Subscription ID is undefined or null")
+    }
+    await onApproveSubscriptionHandler({
+      subscriptionID: data.subscriptionID,
+    })
   },
 })
 ```
@@ -147,6 +83,59 @@ stripe.createCharge(/* charge details */)
 ```typescript
 const momo = new MomoGateway()
 momo.startPayment(/* payment details */)
+```
+
+### Google Pay Example
+
+```typescript
+const googlePay = new GooglePayGateway({
+  environment: "TEST",
+  paymentRequest: {
+    apiVersion: 2,
+    apiVersionMinor: 0,
+    allowedPaymentMethods: [
+      {
+        type: "CARD",
+        parameters: {
+          allowedAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
+          allowedCardNetworks: ["MASTERCARD", "VISA"],
+          billingAddressRequired: true,
+        },
+        tokenizationSpecification: {
+          type: "PAYMENT_GATEWAY",
+          parameters: {
+            gateway: "example",
+            gatewayMerchantId: "exampleGatewayMerchantId",
+          },
+        },
+      },
+    ],
+    merchantInfo: {
+      merchantId: "12345678901234567890",
+      merchantName: "Demo Merchant",
+    },
+    transactionInfo: {
+      totalPriceStatus: "FINAL",
+      totalPriceLabel: "Total",
+      totalPrice: product.price,
+      currencyCode: product.currency,
+      countryCode: "US",
+    },
+    callbackIntents: [
+      "PAYMENT_AUTHORIZATION",
+      "SHIPPING_ADDRESS",
+      "SHIPPING_OPTION",
+    ],
+    shippingAddressRequired: true,
+    shippingAddressParameters: {
+      phoneNumberRequired: true,
+    },
+    shippingOptionRequired: true,
+  },
+})
+
+// Render Google Pay button
+googlePay.createButton("google-pay-button-container")
 ```
 
 ## PayPal Methods
@@ -206,3 +195,24 @@ When initializing the `PaypalGateway`, you can pass the following options:
 - `getProductList()`: Retrieves a list of products.
 - `getProductDetails(productId: string)`: Retrieves details of a product.
 - `updateProduct(productId: string, data: any)`: Updates an existing product.
+
+## Google Pay Methods
+
+### Initialization Options
+
+When initializing the `GooglePayGateway`, you can pass the following options:
+
+| Option                          | Type     | Description                                                     |
+| ------------------------------- | -------- | --------------------------------------------------------------- |
+| `environment`                   | string   | Environment to use (`TEST` or `PRODUCTION`)                     |
+| `buttonType`                    | string   | Type of the Google Pay button (default: "buy")                  |
+| `buttonColor`                   | string   | Color of the Google Pay button (default: "default")             |
+| `buttonSizeMode`                | string   | Size mode of the Google Pay button (default: "static")          |
+| `existingPaymentMethodRequired` | boolean  | Whether an existing payment method is required (default: false) |
+| `paymentRequest`                | object   | Payment request configuration object                            |
+| `onLoadPaymentData`             | function | Callback function when payment data is loaded                   |
+| `onCancel`                      | function | Callback function when payment is canceled                      |
+| `onError`                       | function | Callback function when an error occurs                          |
+| `onClick`                       | function | Callback function when the button is clicked                    |
+| `paymentDataCallbacks`          | object   | Callbacks for payment data changes and authorization            |
+| `onReadyToPayChange`            | function | Callback function when the ready-to-pay state changes           |

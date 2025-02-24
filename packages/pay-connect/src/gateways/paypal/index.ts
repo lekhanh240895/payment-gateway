@@ -8,10 +8,14 @@ import {
   PayPalScriptOptions,
 } from "@paypal/paypal-js"
 
+export interface PaypalGatewayOptions extends PayPalScriptOptions {
+  clientSecret?: string
+}
+
 export class PaypalGateway {
   private clientId: string
   private clientSecret?: string
-  private options: PayPalScriptOptions
+  private options: PaypalGatewayOptions
   private baseUrl: string
 
   public orders: PayPalOrders
@@ -19,8 +23,8 @@ export class PaypalGateway {
   public payments: PayPalPayments
   public products: PayPalProducts
 
-  constructor(options: PayPalScriptOptions, clientSecret?: string) {
-    const defaultOptions: Partial<PayPalScriptOptions> = {
+  constructor(options: PaypalGatewayOptions) {
+    const defaultOptions: Partial<PaypalGatewayOptions> = {
       currency: "USD",
       intent: "CAPTURE",
       vault: false,
@@ -29,8 +33,8 @@ export class PaypalGateway {
     }
 
     this.options = { ...defaultOptions, ...options }
-    this.clientId = this.options.clientId
-    this.clientSecret = clientSecret
+    this.clientId = this.options.clientId || "test"
+    this.clientSecret = this.options.clientSecret
     this.baseUrl =
       this.options.environment === "production"
         ? "https://api-m.paypal.com"

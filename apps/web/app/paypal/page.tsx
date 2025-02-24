@@ -1,5 +1,5 @@
 import React from "react"
-import PaymentGateway from "../components/PaymentGateway"
+import PaymentGateway from "../components/PaypalGateway"
 
 function Paypal() {
   return (

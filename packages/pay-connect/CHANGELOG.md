@@ -1,5 +1,11 @@
 # pay-connect
 
+## 0.3.0
+
+### Minor Changes
+
+- Add Google Pay gateway implementation
+
 ## 0.2.1
 
 ### Patch Changes
