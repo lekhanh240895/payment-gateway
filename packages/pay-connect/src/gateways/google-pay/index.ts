@@ -215,7 +215,7 @@ export class GooglePayGateway {
     })
   }
 
-  public createButton(containerId: string): void {
+  public renderButton(containerId: string): void {
     const button = document.createElement(
       "google-pay-button",
     ) as GooglePayButton

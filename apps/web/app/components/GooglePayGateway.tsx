@@ -64,7 +64,7 @@ function GooglePayGatewayComponent() {
 
   useEffect(() => {
     const googlePayGateway = new GooglePayGateway(googlePayOptions)
-    googlePayGateway.createButton("google-pay-button-container")
+    googlePayGateway.renderButton("google-pay-button-container")
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

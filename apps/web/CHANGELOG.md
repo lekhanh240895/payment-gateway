@@ -1,5 +1,12 @@
 # web
 
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - pay-connect@0.3.1
+
 ## 0.1.3
 
 ### Patch Changes

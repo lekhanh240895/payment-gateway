@@ -135,7 +135,7 @@ const googlePay = new GooglePayGateway({
 })
 
 // Render Google Pay button
-googlePay.createButton("google-pay-button-container")
+googlePay.renderButton("google-pay-button-container")
 ```
 
 ## PayPal Methods

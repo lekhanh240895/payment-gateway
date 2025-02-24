@@ -1,5 +1,11 @@
 # pay-connect
 
+## 0.3.1
+
+### Patch Changes
+
+- Change render button method name
+
 ## 0.3.0
 
 ### Minor Changes

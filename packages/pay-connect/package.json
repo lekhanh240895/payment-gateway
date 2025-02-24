@@ -1,6 +1,6 @@
 {
   "name": "pay-connect",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A module for integrating multiple payment gateways including PayPal, Stripe, and Momo.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
