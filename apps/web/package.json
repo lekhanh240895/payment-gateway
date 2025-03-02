@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "type": "module",
   "private": true,
   "scripts": {
@@ -11,6 +11,7 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@hookform/resolvers": "^4.1.2",
     "@repo/tailwind-config": "workspace:*",
     "@repo/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.0.4",
@@ -23,9 +24,10 @@
     "postcss": "^8.5.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
     "tailwind-merge": "^3.0.1",
     "tailwindcss": "^3.4.1",
-    "tailwindcss-animate": "^1.0.7"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

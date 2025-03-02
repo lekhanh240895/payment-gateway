@@ -1,5 +1,13 @@
 # pay-connect
 
+## 0.4.0
+
+### Minor Changes
+
+- Add Stripe gateway implementation
+- Add gateway initialize method `initializeGateways`
+- Update documentation
+
 ## 0.3.1
 
 ### Patch Changes

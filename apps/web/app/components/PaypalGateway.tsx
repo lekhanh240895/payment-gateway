@@ -2,14 +2,19 @@
 
 import { useEffect, useState, useRef } from "react"
 import { Button } from "@repo/ui/components"
-import { PaypalGateway } from "pay-connect"
+import { initializeGateways } from "pay-connect"
+import {
+  NEXT_PUBLIC_PAYPAL_CLIENT_ID,
+  NEXT_PUBLIC_PAYPAL_CLIENT_SECRET,
+} from "@/lib/constants/common"
 
 const PaymentGatewayComponent = () => {
-  const paypal = new PaypalGateway({
-    clientId:
-      "ATcKk56VTlFumY6C0u3YiTC94xR5_RST9CNRIc18Cby7iGcfc3cNQzMIygtzyP9GCjxszG2X4BCqtUI0",
-    clientSecret:
-      "EMlSYr0oXYUs2u_ThwWYsaw5f5nyXdditxTCgGzKrc_ANR-2amzDvHVpiGfVJDwO0Z9WrV1MEJ5RpzAF",
+  const paypalOptions = {
+    clientId: NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
+    clientSecret: NEXT_PUBLIC_PAYPAL_CLIENT_SECRET!,
+  }
+  const { paypal } = initializeGateways(["paypal"], {
+    paypal: paypalOptions,
   })
 
   const [transactionId, setTransactionId] = useState<string | null>(null)

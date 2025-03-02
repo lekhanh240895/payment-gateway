@@ -1,7 +1,7 @@
 {
   "name": "pay-connect",
-  "version": "0.3.1",
-  "description": "A module for integrating multiple payment gateways including PayPal, Stripe, and Momo.",
+  "version": "0.4.0",
+  "description": "A module for integrating multiple payment gateways including PayPal, Stripe, GooglePay and Momo.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -21,6 +21,7 @@
     "gateway",
     "paypal",
     "stripe",
+    "googlepay",
     "momo"
   ],
   "author": "Khanh Le",
@@ -32,7 +33,9 @@
   ],
   "dependencies": {
     "@google-pay/button-element": "^3.1.0",
-    "@paypal/paypal-js": "^8.2.0"
+    "@paypal/paypal-js": "^8.2.0",
+    "@stripe/stripe-js": "^5.7.0",
+    "stripe": "^17.7.0"
   },
   "devDependencies": {
     "@types/node": "^22.13.1"

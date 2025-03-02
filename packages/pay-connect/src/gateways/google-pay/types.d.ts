@@ -37,7 +37,7 @@ export type ShippingOptionParameters =
   google.payments.api.ShippingOptionParameters
 export type ShippingAddressParameters =
   google.payments.api.ShippingAddressParameters
-export interface GooglePayOptions {
+export interface GooglePayGatewayOptions {
   environment: Environment
   paymentRequest: PaymentRequest
   buttonType?: ButtonType

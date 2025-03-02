@@ -1,7 +1,7 @@
 import "@google-pay/button-element/dist/index"
 import GooglePayButton from "@google-pay/button-element/dist/index"
 import {
-  GooglePayOptions,
+  GooglePayGatewayOptions,
   PaymentData,
   PaymentsError,
   IntermediatePaymentData,
@@ -15,10 +15,10 @@ import {
 } from "./types"
 
 export class GooglePayGateway {
-  private options: GooglePayOptions
+  private options: GooglePayGatewayOptions
 
-  constructor(options: GooglePayOptions) {
-    const defaultOptions: GooglePayOptions = {
+  constructor(options: GooglePayGatewayOptions) {
+    const defaultOptions: GooglePayGatewayOptions = {
       environment: "TEST",
       buttonType: "buy",
       buttonColor: "default",

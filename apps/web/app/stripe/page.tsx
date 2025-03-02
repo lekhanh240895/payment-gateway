@@ -1,12 +1,12 @@
 import React from "react"
-import StripeGateway from "../components/StripeGateway"
+import StripeGateWayClient from "@/components/client/StripeGateway"
 
-function Paypal() {
+function StripePage() {
   return (
     <div>
-      <StripeGateway />
+      <StripeGateWayClient />
     </div>
   )
 }
 
-export default Paypal
+export default StripePage

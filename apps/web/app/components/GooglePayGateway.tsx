@@ -1,4 +1,4 @@
-import { GooglePayGateway, GooglePayOptions } from "pay-connect"
+import { GooglePayGatewayOptions, initializeGateways } from "pay-connect"
 import React, { useEffect } from "react"
 import {
   Card,
@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-} from "@/components/ui/card"
+} from "@repo/ui/components"
 import Image from "next/image"
 
 function GooglePayGatewayComponent() {
@@ -16,7 +16,7 @@ function GooglePayGatewayComponent() {
     currency: "USD",
   }
 
-  const googlePayOptions: GooglePayOptions = {
+  const googlePayOptions: GooglePayGatewayOptions = {
     environment: "TEST",
     paymentRequest: {
       apiVersion: 2,
@@ -61,10 +61,12 @@ function GooglePayGatewayComponent() {
       shippingOptionRequired: true,
     },
   }
+  const { googlepay } = initializeGateways(["googlepay"], {
+    googlepay: googlePayOptions,
+  })
 
   useEffect(() => {
-    const googlePayGateway = new GooglePayGateway(googlePayOptions)
-    googlePayGateway.renderButton("google-pay-button-container")
+    googlepay.renderButton("google-pay-button-container")
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

@@ -1,8 +1,9 @@
 # Pay Connect Modules
 
-This project provides a unified interface for integrating multiple payment
-gateways, including PayPal, Stripe, Momo, and Google Pay. It is designed to
-simplify the process of handling payments in your application.
+Are you tired of getting lost in the official documentation for multiple payment
+gateways? This project provides a unified interface for integrating multiple
+payment gateways, including PayPal, Stripe, Momo, and Google Pay. It is designed
+to simplify the process of handling payments in your application.
 
 ## Features
 
@@ -30,22 +31,86 @@ npm install pay-connect
 You can import the payment gateway module in your application as follows:
 
 ```typescript
-import {
-  PaypalGateway,
-  StripeGateway,
-  MomoGateway,
-  GooglePayGateway,
-} from "pay-connect"
+import { initializeGateways } from "pay-connect"
+```
+
+### Initializing Gateways
+
+You can initialize multiple gateways using the initializeGateways function:
+
+```typescript
+const gatewayConfig = {
+  paypal: {
+    clientId: "your-client-id",
+    clientSecret: "your-client-secret",
+    environment: "sandbox", // or "production"
+  },
+  stripe: {
+    apiKey: "your-stripe-secret-key",
+    publishableKey: "your-stripe-publish-key",
+    webhookConfig: {
+      secret: "your-stripe-webhook-secret",
+      customHandlers: {
+        "customer.subscription.created": async (event) => {
+          console.log("Subscription created:", event)
+        },
+        "customer.subscription.deleted": async (event) => {
+          console.log("Subscription deleted:", event)
+        },
+      },
+    },
+  },
+  googlepay: {
+    environment: "TEST",
+    paymentRequest: {
+      apiVersion: 2,
+      apiVersionMinor: 0,
+      allowedPaymentMethods: [
+        {
+          type: "CARD",
+          parameters: {
+            allowedAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
+            allowedCardNetworks: ["MASTERCARD", "VISA"],
+            billingAddressRequired: true,
+          },
+          tokenizationSpecification: {
+            type: "PAYMENT_GATEWAY",
+            parameters: {
+              gateway: "example",
+              gatewayMerchantId: "exampleGatewayMerchantId",
+            },
+          },
+        },
+      ],
+      merchantInfo: {
+        merchantId: "12345678901234567890",
+        merchantName: "Demo Merchant",
+      },
+      transactionInfo: {
+        totalPriceStatus: "FINAL",
+        totalPriceLabel: "Total",
+        totalPrice: "10.00",
+        currencyCode: "USD",
+        countryCode: "US",
+      },
+      callbackIntents: ["PAYMENT_AUTHORIZATION"],
+    },
+  },
+  momo: {
+    // Momo configuration
+  },
+}
+
+const gateways = initializeGateways(
+  ["paypal", "stripe", "googlepay", "momo"],
+  gatewayConfig,
+)
 ```
 
 ### PayPal Example
 
 ```typescript
-const paypal = new PaypalGateway({
-  clientId: "your-client-id",
-  clientSecret: "your-client-secret",
-  environment: "sandbox", // or "production"
-})
+const paypal = gateways.paypal
 
 // Render checkout button
 paypal.renderCheckoutButtons("paypal-button-checkout-container", {
@@ -74,8 +139,52 @@ paypal.renderSubscriptionButtons("paypal-button-subscription-container", {
 ### Stripe Example
 
 ```typescript
-const stripe = new StripeGateway("your-api-key")
-stripe.createCharge(/* charge details */)
+const stripe = gateways.stripe
+
+// Create a charge
+stripe.charges.create({
+  amount: 2000,
+  currency: "usd",
+  source: "tok_visa",
+  description: "Charge for test@example.com",
+})
+
+// Create a subscription
+const product = await stripe.products.create({
+  name: "Product Name",
+  description: "Product Description",
+})
+
+const customer = await stripe.customers.create({
+  email: "customer@example.com",
+  name: "Customer Name",
+})
+
+const price = await stripe.prices.create({
+  unit_amount: 1000,
+  currency: "usd",
+  product: product.id,
+  recurring: { interval: "month" },
+})
+
+const session = await stripe.checkout.sessions.create({
+  mode: "subscription",
+  payment_method_types: ["card"],
+  line_items: [
+    {
+      price: price.id,
+      quantity: 1,
+    },
+  ],
+  customer: customer.id,
+  success_url: `http://example.com/?success=1`,
+  cancel_url: `http://example.com/?canceled=1`,
+})
+
+const clientStripe = await stripe.loadStripeClient()
+await clientStripe!.redirectToCheckout({
+  sessionId: session.id,
+})
 ```
 
 ### Momo Example
@@ -88,51 +197,7 @@ momo.startPayment(/* payment details */)
 ### Google Pay Example
 
 ```typescript
-const googlePay = new GooglePayGateway({
-  environment: "TEST",
-  paymentRequest: {
-    apiVersion: 2,
-    apiVersionMinor: 0,
-    allowedPaymentMethods: [
-      {
-        type: "CARD",
-        parameters: {
-          allowedAuthMethods: ["PAN_ONLY", "CRYPTOGRAM_3DS"],
-          allowedCardNetworks: ["MASTERCARD", "VISA"],
-          billingAddressRequired: true,
-        },
-        tokenizationSpecification: {
-          type: "PAYMENT_GATEWAY",
-          parameters: {
-            gateway: "example",
-            gatewayMerchantId: "exampleGatewayMerchantId",
-          },
-        },
-      },
-    ],
-    merchantInfo: {
-      merchantId: "12345678901234567890",
-      merchantName: "Demo Merchant",
-    },
-    transactionInfo: {
-      totalPriceStatus: "FINAL",
-      totalPriceLabel: "Total",
-      totalPrice: product.price,
-      currencyCode: product.currency,
-      countryCode: "US",
-    },
-    callbackIntents: [
-      "PAYMENT_AUTHORIZATION",
-      "SHIPPING_ADDRESS",
-      "SHIPPING_OPTION",
-    ],
-    shippingAddressRequired: true,
-    shippingAddressParameters: {
-      phoneNumberRequired: true,
-    },
-    shippingOptionRequired: true,
-  },
-})
+const googlePay = gateways.googlepay
 
 // Render Google Pay button
 googlePay.renderButton("google-pay-button-container")
@@ -216,3 +281,83 @@ When initializing the `GooglePayGateway`, you can pass the following options:
 | `onClick`                       | function | Callback function when the button is clicked                    |
 | `paymentDataCallbacks`          | object   | Callbacks for payment data changes and authorization            |
 | `onReadyToPayChange`            | function | Callback function when the ready-to-pay state changes           |
+
+## Stripe Methods
+
+### Initialization Options
+
+When initializing the `StripeGateway`, you can pass the following options:
+
+| Option           | Type   | Description                                       |
+| ---------------- | ------ | ------------------------------------------------- |
+| `apiKey`         | string | Your Stripe secret key                            |
+| `publishableKey` | string | Your Stripe publishable key                       |
+| `apiVersion`     | string | Stripe API version (default: "2025-02-24.acacia") |
+| `webhookConfig`  | object | Configuration for Stripe webhooks                 |
+
+### Charges
+
+- `create(data: ChargeData)`: Creates a new charge.
+- `retrieve(chargeID: string)`: Retrieves an existing charge.
+- `capture(chargeID: string)`: Captures an existing charge.
+- `refund(chargeID: string, data: RefundData)`: Refunds an existing charge.
+
+### Customers
+
+- `create(data: CustomerData)`: Creates a new customer.
+- `retrieve(customerID: string)`: Retrieves an existing customer.
+- `update(customerID: string, data: CustomerData)`: Updates an existing
+  customer.
+- `delete(customerID: string)`: Deletes an existing customer.
+
+### Subscriptions
+
+- `create(data: SubscriptionData)`: Creates a new subscription.
+- `retrieve(subscriptionID: string)`: Retrieves an existing subscription.
+- `update(subscriptionID: string, data: SubscriptionData)`: Updates an existing
+  subscription.
+- `cancel(subscriptionID: string)`: Cancels an existing subscription.
+
+### Products
+
+- `create(data: ProductData)`: Creates a new product.
+- `retrieve(productID: string)`: Retrieves an existing product.
+- `update(productID: string, data: ProductData)`: Updates an existing product.
+- `delete(productID: string)`: Deletes an existing product.
+
+### Prices
+
+- `create(data: PriceData)`: Creates a new price.
+- `retrieve(priceID: string)`: Retrieves an existing price.
+- `update(priceID: string, data: PriceData)`: Updates an existing price.
+
+### Payment Methods
+
+- `attach(customerID: string, paymentMethodID: string)`: Attaches a payment
+  method to a customer.
+- `detach(paymentMethodID: string)`: Detaches a payment method from a customer.
+
+### Checkout Sessions
+
+- `create(data: SessionData)`: Creates a new checkout session.
+- `retrieve(sessionID: string)`: Retrieves an existing checkout session.
+
+### Billing Portal Sessions
+
+- `create(data: SessionData)`: Creates a new billing portal session.
+
+### Plans
+
+- `create(data: PlanData)`: Creates a new plan.
+- `retrieve(planID: string)`: Retrieves an existing plan.
+- `update(planID: string, data: PlanData)`: Updates an existing plan.
+
+### Webhooks
+
+- `handleWebhook(req: Request, res: Response)`: Handles incoming Stripe
+  webhooks.
+
+### Utility Methods
+
+- `loadStripeClient(constructorOptions?: StripeConstructorOptions)`: Loads the
+  Stripe client.
